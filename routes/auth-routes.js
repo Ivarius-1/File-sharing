@@ -1,7 +1,7 @@
 const Router = require('express')
-const router = new Router()
+const router = new Router() // сначало идут импорты, потом уже остальное
 const userController = require('../controller/user-contoller')
-const {check} = require('express-validator')
+const {check} = require('express-validator') // поменяй импорты на modulejs
 
 router.post('/register', [
     check('login', "Логин должен содержать минимум 3 символа").isLength({min:3}),

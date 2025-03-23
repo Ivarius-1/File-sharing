@@ -12,7 +12,7 @@ model Person {
   login    String  @unique
   password String
   email    String
-  online   Boolean @default(false)
+  online   Boolean @default(false) // в контроллере указал в виде пометки
   files    File[]
 }
 

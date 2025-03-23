@@ -4,14 +4,15 @@ const jwt = require('jsonwebtoken')
 const { validationResult } = require('express-validator')
 const {secret} = require("../config")
 const fs = require('fs')
-const path = require('path')
+const path = require('path') // поменяй импорты на modulejs
 
 const generateAccessToken = (id, roles) => {
     const payload = {
         id,
         roles
     }
-    return jwt.sign(payload, secret, {expiresIn: "24h"})
+    return jwt.sign(payload, secret, {expiresIn: "24h"}) // если это access токен, то многовато времени, не хватает еще refreshToken,
+    // чтобы обновлять access - дефолт jwt
 }
 
 class userController{
@@ -23,12 +24,12 @@ class userController{
                 return res.status(400).json({message: "Ошибка при регестрации", errors})
             }
             const {login, password, email} = req.body
-            const hashedPassword = await bcrypt.hash(password, 7)
+            const hashedPassword = await bcrypt.hash(password, 7) // лучше поменяй на аргон, он более безопасный
             const candidate = await prisma.person.findUnique({ where:{login}})
 
             if (candidate){ 
                 return res.status(400).json({message: "Такой логин уже есть"})
-            }
+            } // проверки еще на пароль и email
 
             const newUser = await prisma.person.create({
                 data: {
@@ -41,7 +42,7 @@ class userController{
             const folderPath = path.resolve(__dirname, "../user_folder", `${login}_folder`)
             fs.mkdir(folderPath, { recursive: true }, (err) => {
                 if (err) {
-                    res.status(400).json({message: 'Ошибка создания папки'})
+                    res.status(400).json({message: 'Ошибка создания папки'}) // лучше указать в чем именно
                     return;
                 }
             });
@@ -53,7 +54,7 @@ class userController{
             });
         } catch (e) {
             console.log(e)
-            res.status(400).json({message: 'Registration error'})
+            res.status(400).json({message: 'Registration error'}) // какая именно ошибка, в чем?
         }
     }
 
@@ -64,11 +65,12 @@ class userController{
             if(!user){
                 return res.status(400).json({message:`Пользователь ${login} не найден`})
             }
-            const validPassword = bcrypt.compareSync(password, user.password)
+            const validPassword = bcrypt.compareSync(password, user.password) // тут также на аргон
             if (!validPassword){
                 return res.status(400).json({message:`Неверный пароль`})
             }
-            const updateActive = await prisma.person.update({where: {login: login}, data: {online: true}});
+            const updateActive = await prisma.person.update({where: {login: login}, data: {online: true}}); // интересно, если хочешь оставь архитекрутуру с онлайном
+            // но обычно это делается по другому
             const token = generateAccessToken(user.id)
             return res.json({token})
         } catch (e) {
@@ -82,7 +84,7 @@ class userController{
             res.json(users)
         } catch (e) {
             console.log(e)
-            res.status(500).json({message: "Ошибка при получении пользователей"})
+            res.status(500).json({message: "Ошибка при получении пользователей"}) // в чем именно
         }  
     }
 }

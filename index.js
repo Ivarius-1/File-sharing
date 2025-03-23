@@ -1,11 +1,11 @@
 const express = require('express')
-const authRouter = require('./routes/auth-routes')
+const authRouter = require('./routes/auth-routes') // поменяй импорты на modulejs
 
 
 const app = express()
 
 app.use(express.json())
-app.use("/auth", authRouter)
+app.use("/auth", authRouter) // добавь дефолтный путь 'api'
 
 const PORT = process.env.PORT || 5000
 
